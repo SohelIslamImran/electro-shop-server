@@ -20,7 +20,6 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
     const productCollection = client.db(`${process.env.DB_NAME}`).collection("products");
     const orderCollection = client.db(`${process.env.DB_NAME}`).collection("Orders");
-    console.log("Connected to database");
 
     app.get('/products', (req, res) => {
         productCollection.find({})
@@ -39,7 +38,6 @@ client.connect(err => {
     })
 
     app.post('/addOrder', (req, res) => {
-        console.log(req.body);
         const order = req.body;
         orderCollection.insertOne(order)
             .then(result => res.send(!!result.insertedCount))
