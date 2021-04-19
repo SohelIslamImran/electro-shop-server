@@ -19,10 +19,20 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@databas
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
     const productCollection = client.db(`${process.env.DB_NAME}`).collection("products");
+    productCollection.createIndex({ productName: "text" });
     const orderCollection = client.db(`${process.env.DB_NAME}`).collection("Orders");
 
     app.get('/products', (req, res) => {
         productCollection.find({})
+            .toArray((err, docs) => res.send(docs))
+    })
+
+    app.get('/search', (req, res) => {
+        if (!req.query.keyword) {
+            return productCollection.find({})
+                .toArray((err, docs) => res.send(docs))
+        }
+        productCollection.find({ $text: { $search: req.query.keyword } })
             .toArray((err, docs) => res.send(docs))
     })
 
@@ -48,6 +58,17 @@ client.connect(err => {
             .then(result => {
                 res.send(!!result.deletedCount)
             })
+    })
+
+    app.patch('/update/:id', (req, res) => {
+        productCollection.updateOne(
+            { _id: ObjectId(req.params.id) },
+            {
+                $set: req.body
+            }
+        ).then(result => {
+            res.send(result.modifiedCount > 0)
+        })
     })
 });
 
