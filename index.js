@@ -11,7 +11,7 @@ app.use(cors());
 const port = process.env.PORT || 5000
 
 app.get('/', (req, res) => {
-    res.send('Electro Shop Server is running')
+    res.send('Welcome to Electro Shop Server')
 })
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@database.1n8y8.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
